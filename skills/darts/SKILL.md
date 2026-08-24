@@ -1,6 +1,6 @@
 ---
 name: darts
-description: "MANDATORY: Load this skill when a designer wants to add a comment layer, share a prototype for stakeholder review, get reviewer feedback, annotate a prototype, or produce a shareable review file. Triggers: comment layer, share prototype, stakeholder review, add darts, annotate, feedback layer, review link, share for feedback, commenting, add comments, send to review | Phase: prototype"
+description: "MANDATORY: Load this skill when a designer wants to add a comment layer, share a prototype for stakeholder review, get reviewer feedback, annotate a prototype, or produce a shareable review file. Triggers: comment layer, share prototype, stakeholder review, add darts, annotate, feedback layer, review link, share for feedback, commenting, add comments, send to review, ship for review, get feedback, send to stakeholders, ready for review, package for review, make shareable, share this, share with team, share with client, wrap up for review, prep for stakeholders, bundle prototype, export prototype, design darts, client review, reviewable, pin comments, embed feedback, stakeholder feedback, shareable html, single file | Phase: prototype"
 argument-hint: "[prototype path or name]"
 user-invocable: true
 disable-model-invocation: false
