@@ -69,13 +69,15 @@ cat angular.json 2>/dev/null | grep "\"defaultProject\"\|\"projects\"" | head -3
 
 ---
 
-## Step 2 — Confirm bundle name
+## Step 2 — Derive bundle name
 
-Derive a default name from the prototype directory (e.g. `ns-ds-claude-forum` → `"NS DS Claude Forum Review"`). Then say:
+Derive the name automatically from the prototype directory (e.g. `adem2` → `"ADEM2 Review"`). If a name was given in `$ARGUMENTS` (e.g. "share for review as 'Sprint 3'"), use that instead.
 
-> "I'll call this **[derived name]** — reply with a different name to change it, or just say 'go' to start building."
+State the name inline as you proceed — no confirmation needed:
 
-If they give a different name, use it. If they say "go", "yes", "ok", "looks good", or anything that isn't a new name, proceed immediately with the derived name.
+> "Vite project found at `./adem2`. Building **ADEM2 Review**..."
+
+Then immediately continue to Step 3 without waiting for a response. If they want a different name they can say "share for review, call it Sprint 3" next time.
 
 ---
 
