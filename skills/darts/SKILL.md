@@ -58,12 +58,11 @@ Which prototype should I package for review?
 
 ---
 
-## Step 2 — Confirm bundle details
+## Step 2 — Confirm bundle name
 
-Ask one question at a time:
+Ask one question: "What should I call this review bundle? (e.g. 'Sprint 12 Review' — or press Enter to use the project name)"
 
-1. "What should I call this review bundle? (e.g. 'Sprint 12 Review' — or press Enter to use the project name)"
-2. "Should I send feedback to a collection endpoint? If yes, paste the URL. Otherwise press Enter to skip."
+If they press Enter or give no name, derive one from the prototype directory name.
 
 ---
 
@@ -93,8 +92,7 @@ Tell the designer upfront: "Bundling your prototype — Vite is compiling and in
 node packages/darts-bundle/bin/darts-bundle.js \
   --name "$PROTOTYPE_NAME" \
   --input "$PROTOTYPE_PATH" \
-  --output "${PROTOTYPE_NAME// /-}-review.html" \
-  ${SINK_URL:+--sink "$SINK_URL"}
+  --output "${PROTOTYPE_NAME// /-}-review.html"
 ```
 
 Stream any output so the designer sees progress. Report the final output path and file size.
