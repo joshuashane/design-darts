@@ -316,6 +316,7 @@ function deleteComment(id: string): void {
 function togglePresenter(): void {
   _presenterHidden = !_presenterHidden;
   applyPresenterMode(_presenterHidden);
+  if (_presenterHidden) showToast('Press Shift + C to bring back commenting');
 }
 
 
