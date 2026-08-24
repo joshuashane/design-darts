@@ -1,6 +1,6 @@
 ---
 name: darts
-description: "MANDATORY: Load this skill when a designer wants to add a comment layer, share a prototype for stakeholder review, get reviewer feedback, annotate a prototype, or produce a shareable review file. Triggers: comment layer, share prototype, stakeholder review, add darts, annotate, feedback layer, review link, share for feedback, commenting, add comments, send to review, ship for review, get feedback, send to stakeholders, ready for review, package for review, make shareable, share this, share with team, share with client, wrap up for review, prep for stakeholders, bundle prototype, export prototype, design darts, client review, reviewable, pin comments, embed feedback, stakeholder feedback, shareable html, single file | Phase: prototype"
+description: "MANDATORY: Load this skill when a designer wants to add a comment layer, share a prototype for stakeholder review, get reviewer feedback, annotate a prototype, or produce a shareable review file. Triggers: comment layer, share prototype, stakeholder review, add darts, annotate, feedback layer, review link, share for feedback, commenting, add comments, send to review, ship for review, get feedback, send to stakeholders, ready for review, package for review, make shareable, share this, share with team, share with client, wrap up for review, prep for stakeholders, bundle prototype, export prototype, design darts, client review, reviewable, pin comments, embed feedback, stakeholder feedback, shareable html, single file, share storybook, storybook review, share component library, angular review, share next app | Phase: prototype"
 argument-hint: "[prototype path or name]"
 user-invocable: true
 disable-model-invocation: false
@@ -43,9 +43,10 @@ find . -maxdepth 3 \
   2>/dev/null
 ```
 
-Also check package.json for CRA:
+Also check package.json for CRA, Storybook, and Angular:
 ```bash
-grep -l "react-scripts" */package.json package.json 2>/dev/null | head -3
+grep -l "react-scripts\|@storybook\|@angular/core" */package.json package.json 2>/dev/null | head -3
+cat angular.json 2>/dev/null | grep "\"defaultProject\"\|\"projects\"" | head -3
 ```
 
 **Match the result to a strategy:**
@@ -54,11 +55,13 @@ grep -l "react-scripts" */package.json package.json 2>/dev/null | head -3
 |---|---|---|
 | `vite.config.*` | Vite/React | darts-bundle handles the build internally |
 | `next.config.*` | Next.js | Run `next build` → use `out/` directory |
+| `angular.json` | Angular | Run `ng build` → use `dist/{project}/browser/` |
 | `react-scripts` in package.json | Create React App | Run `npm run build` → use `build/` directory |
+| `@storybook` in package.json | Storybook | Run `build-storybook` → use `storybook-static/` |
 | `svelte.config.js` | SvelteKit | Run `npm run build` → use `build/` directory |
 | `nuxt.config.*` | Nuxt | Run `npx nuxi generate` → use `.output/public/` |
 | `index.html` with no framework | Plain HTML | Use directory directly |
-| None of the above | Unknown | Ask: "What kind of project is this? I can bundle Vite, Next.js, React (CRA), SvelteKit, Nuxt, or plain HTML." |
+| None of the above | Unknown | Ask: "What kind of project is this? I can bundle Vite, Next.js, Angular, React (CRA), Storybook, SvelteKit, Nuxt, or plain HTML." |
 
 **If multiple apps found:** List them and ask which one to package.
 
@@ -91,6 +94,25 @@ cd "$PROTOTYPE_PATH" && npx next build
 # Output is in ./out/
 ```
 Set `STATIC_INPUT="$PROTOTYPE_PATH/out"`.
+
+**Angular:**
+```bash
+cd "$PROTOTYPE_PATH" && npx ng build --configuration=production
+```
+Find the output directory — Angular puts it in `dist/{projectName}/browser/` (Angular 17+) or `dist/{projectName}/` (older):
+```bash
+ls dist/
+```
+Set `STATIC_INPUT` to whichever path contains `index.html`.
+
+**Storybook:**
+```bash
+cd "$PROTOTYPE_PATH" && npx build-storybook --output-dir storybook-static
+# Output is in ./storybook-static/
+```
+Set `STATIC_INPUT="$PROTOTYPE_PATH/storybook-static"`.
+
+Tell the designer: "I'm building your Storybook as a single offline file — reviewers will be able to browse all your components and pin comments on anything they want to discuss."
 
 **Create React App:**
 ```bash
