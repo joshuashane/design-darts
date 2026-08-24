@@ -71,11 +71,11 @@ cat angular.json 2>/dev/null | grep "\"defaultProject\"\|\"projects\"" | head -3
 
 ## Step 2 — Derive bundle name
 
-Derive the name automatically from the prototype directory (e.g. `adem2` → `"ADEM2 Review"`). If a name was given in `$ARGUMENTS` (e.g. "share for review as 'Sprint 3'"), use that instead.
+Derive the name automatically from the prototype directory (e.g. `my-prototype` → `"My Prototype Review"`). If a name was given in `$ARGUMENTS` (e.g. "share for review as 'Sprint 3'"), use that instead.
 
 State the name inline as you proceed — no confirmation needed:
 
-> "Vite project found at `./adem2`. Building **ADEM2 Review**..."
+> "Vite project found at `./my-prototype`. Building **My Prototype Review**..."
 
 Then immediately continue to Step 3 without waiting for a response. If they want a different name they can say "share for review, call it Sprint 3" next time.
 
