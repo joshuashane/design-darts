@@ -26,9 +26,12 @@ export function injectRuntime(html, opts) {
 <script>window.__TACK_CONFIG__ = ${config};</script>
 <script>${runtimeCode}</script>
 `;
-    // Inject just before </body>; fall back to appending if </body> not found
-    if (html.includes('</body>')) {
-        return html.replace('</body>', `${injection}</body>`);
+    // Inject just before the last </body> in the document.
+    // Using lastIndexOf avoids matching a </body> that appears inside a bundled
+    // JS string (e.g. an HTML template literal in the app source).
+    const bodyCloseIdx = html.lastIndexOf('</body>');
+    if (bodyCloseIdx !== -1) {
+        return html.slice(0, bodyCloseIdx) + injection + html.slice(bodyCloseIdx);
     }
     return html + injection;
 }
