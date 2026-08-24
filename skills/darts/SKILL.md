@@ -90,6 +90,25 @@ Then continue to Step 4 without any interruption.
 
 ---
 
+## Step 3b — Check for BrowserRouter (React apps)
+
+Before bundling, check if the app uses BrowserRouter:
+
+```bash
+grep -r "BrowserRouter" "$PROTOTYPE_PATH/src" --include="*.tsx" --include="*.ts" -l 2>/dev/null
+```
+
+If found and `HashRouter` is NOT also present, warn the designer:
+
+> "⚠️ Your app uses BrowserRouter, which produces a blank page when opened from file:// (the URL path becomes a filesystem path and no routes match). I'll switch it to HashRouter — this only affects the bundled review file, not your dev server."
+
+Then make the replacement in the entry file (main.tsx or index.tsx):
+```
+import { HashRouter as BrowserRouter } from 'react-router-dom'
+```
+
+This is a safe swap — HashRouter uses the `#` fragment which works from file://, and your dev server continues to work with BrowserRouter.
+
 ## Step 4 — Run darts-bundle
 
 Tell the designer upfront: "Bundling your prototype — Vite is compiling and inlining all assets. This usually takes 20–60 seconds..."

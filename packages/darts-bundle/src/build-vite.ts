@@ -16,24 +16,50 @@ export async function buildVite(opts: BuildViteOptions): Promise<void> {
   const prototypeId = generatePrototypeId();
   const tempOut = path.join(opts.input, '.tack-build');
 
+  // Warn if the app uses BrowserRouter — it produces a blank page from file://
+  const mainFiles = ['src/main.tsx', 'src/main.ts', 'src/index.tsx', 'src/index.ts'];
+  for (const f of mainFiles) {
+    const p = path.join(opts.input, f);
+    if (fs.existsSync(p)) {
+      const src = fs.readFileSync(p, 'utf-8');
+      if (src.includes('BrowserRouter') && !src.includes('HashRouter')) {
+        console.warn(
+          '\n⚠️  BrowserRouter detected. Apps using BrowserRouter produce a blank page when opened from file://\n' +
+          '   because the URL path is a filesystem path and no routes match.\n' +
+          '   Fix: replace BrowserRouter with HashRouter in your app entry point.\n'
+        );
+      }
+      break;
+    }
+  }
+
   console.log('Running Vite production build with singlefile…');
 
-  await build({
-    root: opts.input,
-    base: './',
-    plugins: [viteSingleFile()],
-    build: {
-      outDir: tempOut,
-      emptyOutDir: true,
-      assetsInlineLimit: Infinity, // inline everything as data URIs
-      rollupOptions: {
-        output: {
-          manualChunks: undefined, // single bundle
+  // Change to the prototype directory before building so PostCSS plugins
+  // (e.g. Tailwind) resolve content globs from the right location.
+  const prevCwd = process.cwd();
+  process.chdir(opts.input);
+
+  try {
+    await build({
+      root: opts.input,
+      base: './',
+      plugins: [viteSingleFile()],
+      build: {
+        outDir: tempOut,
+        emptyOutDir: true,
+        assetsInlineLimit: Infinity,
+        rollupOptions: {
+          output: {
+            manualChunks: undefined,
+          },
         },
       },
-    },
-    logLevel: 'warn',
-  });
+      logLevel: 'warn',
+    });
+  } finally {
+    process.chdir(prevCwd);
+  }
 
   const indexPath = path.join(tempOut, 'index.html');
   if (!fs.existsSync(indexPath)) {

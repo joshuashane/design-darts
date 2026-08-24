@@ -1,10 +1,17 @@
 {
   "name": "design-darts",
   "private": true,
-  "workspaces": ["packages/*"],
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "build:runtime": "node packages/darts-runtime/build.js",
     "test": "playwright test",
     "test:ingest": "node --test tests/ingest/merge.test.js"
+  },
+  "allowScripts": {
+    "esbuild@0.24.2": true,
+    "esbuild@0.21.5": true,
+    "fsevents@2.3.3": true
   }
 }
