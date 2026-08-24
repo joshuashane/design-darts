@@ -391,10 +391,9 @@ const CSS = `
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 12px 8px;
+    padding: 12px 12px 10px;
     border-bottom: 1px solid rgba(160,130,255,0.12);
   }
-  .cp-title { font-size: 12px; font-weight: 700; color: #c4b5fd; letter-spacing: 0.04em; text-transform: uppercase; }
   .cp-header-actions { display: flex; gap: 4px; align-items: center; }
   .cp-icon-btn {
     all: unset;

@@ -76,7 +76,13 @@ export function showCommentPopover(
 
   el.innerHTML = `
     <div class="cp-header">
-      <span class="cp-title">Comment</span>
+      <div class="cp-row">
+        <div class="cp-avatar" style="background:${avatarBg}">${initials(comment.reviewer.name)}</div>
+        <div class="cp-meta">
+          <span class="cp-name">${comment.reviewer.name}</span>
+          <span class="cp-time" title="${fullDate}">${relativeTime(comment.createdAt)}</span>
+        </div>
+      </div>
       <div class="cp-header-actions">
         <button class="cp-icon-btn cp-resolve" title="${comment.status === 'open' ? 'Mark resolved' : 'Reopen'}">
           ${comment.status === 'open'
@@ -89,13 +95,6 @@ export function showCommentPopover(
       </div>
     </div>
     <div class="cp-body">
-      <div class="cp-row">
-        <div class="cp-avatar" style="background:${avatarBg}">${initials(comment.reviewer.name)}</div>
-        <div class="cp-meta">
-          <span class="cp-name">${comment.reviewer.name}</span>
-          <span class="cp-time" title="${fullDate}">${relativeTime(comment.createdAt)}</span>
-        </div>
-      </div>
       <div class="cp-text">${comment.text.replace(/\n/g, '<br>')}</div>
       <div class="cp-actions">
         <button class="cp-link cp-edit">Edit</button>
