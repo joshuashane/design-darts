@@ -414,7 +414,6 @@ function init(): void {
     savePayload(payload);
     resolvedEls.set(comment.id, el);
     addMarker(comment, el, payload.comments.length - 1);
-    setPanelCollapsed(false);
     refresh(comment.id);
 
     // Lawn-dart drop for newly placed pin

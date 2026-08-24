@@ -2,6 +2,7 @@ let _shadowRoot: ShadowRoot | null = null;
 let _panel: HTMLElement | null = null;
 let _toolbar: HTMLElement | null = null;
 let _panelTab: HTMLElement | null = null;
+let _tabTop = 80; // px from top of viewport; updated by drag
 
 const CSS = `
   :host { all: initial; }
@@ -166,14 +167,14 @@ const CSS = `
   #tack-panel-tab {
     position: fixed;
     right: 0;
-    top: 50%;
-    transform: translateY(-50%) translateX(100%);
+    top: 80px; /* JS sets this; CSS value is just the initial fallback */
+    transform: translateX(100%);
     background: #1a1a2e;
     border: 1px solid rgba(160, 130, 255, 0.25);
     border-right: none;
     border-radius: 8px 0 0 8px;
     padding: 12px 6px;
-    cursor: pointer;
+    cursor: grab;
     color: #c4b5fd;
     font-size: 12px;
     font-family: system-ui, -apple-system, sans-serif;
@@ -181,12 +182,14 @@ const CSS = `
     letter-spacing: 0.05em;
     z-index: 9001;
     gap: 0;
+    user-select: none;
     /* Elastic snap-back on hover-release (base transition = out-transition) */
     transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
                 padding-left 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
                 background 0.2s ease;
   }
-  #tack-panel-tab.is-visible { transform: translateY(-50%) translateX(0); }
+  #tack-panel-tab.is-visible { transform: translateX(0); }
+  #tack-panel-tab.is-visible:active { cursor: grabbing; }
   /* Grow leftward via padding — no gap, background stays the same dark colour */
   #tack-panel-tab.is-visible:hover {
     padding-left: 12px;
@@ -496,7 +499,32 @@ export function initShadowHost(): void {
   _panelTab.id = 'tack-panel-tab';
   _panelTab.setAttribute('aria-label', 'Open comments panel');
   _panelTab.textContent = '‹ Comments';
-  _panelTab.addEventListener('click', () => setPanelCollapsed(false));
+  _panelTab.style.top = `${_tabTop}px`;
+
+  // Drag to reposition vertically; click (no drag) to open panel
+  _panelTab.addEventListener('pointerdown', (e: PointerEvent) => {
+    const startY = e.clientY;
+    const startTop = _tabTop;
+    let dragging = false;
+    (_panelTab as HTMLElement).setPointerCapture(e.pointerId);
+
+    const onMove = (ev: PointerEvent) => {
+      const dy = ev.clientY - startY;
+      if (!dragging && Math.abs(dy) > 5) dragging = true;
+      if (dragging) {
+        _tabTop = Math.max(20, Math.min(startTop + dy, innerHeight - 80));
+        (_panelTab as HTMLElement).style.top = `${_tabTop}px`;
+      }
+    };
+    const onUp = () => {
+      (_panelTab as HTMLElement).removeEventListener('pointermove', onMove);
+      (_panelTab as HTMLElement).removeEventListener('pointerup', onUp);
+      if (!dragging) setPanelCollapsed(false);
+    };
+    (_panelTab as HTMLElement).addEventListener('pointermove', onMove);
+    (_panelTab as HTMLElement).addEventListener('pointerup', onUp);
+  });
+
   _shadowRoot.appendChild(_panelTab);
 }
 
