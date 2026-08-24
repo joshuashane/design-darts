@@ -29,32 +29,40 @@ Package the current prototype into a single shareable HTML file with the Design 
 
 ---
 
-## Step 1 — Locate the prototype
+## Step 1 — Detect the framework and locate the prototype
 
-Search for `vite.config.ts` anywhere in the project (excluding node_modules and dist):
+Design Darts works with any web project. First, detect what kind of project this is:
 
 ```bash
-find . -name "vite.config.ts" \
-  -not -path "*/node_modules/*" \
-  -not -path "*/dist/*" \
-  -not -path "*/.tack-build/*" \
+# Check for framework config files
+find . -maxdepth 3 \
+  \( -name "vite.config.ts" -o -name "vite.config.js" \
+  -o -name "next.config.js" -o -name "next.config.ts" -o -name "next.config.mjs" \
+  -o -name "svelte.config.js" -o -name "nuxt.config.ts" \) \
+  -not -path "*/node_modules/*" -not -path "*/dist/*" \
   2>/dev/null
 ```
 
-**If one result:** Use that directory as the prototype path. Tell the designer what you found: "Found prototype at `./path/to/app` — using that."
-
-**If multiple results:** List them and ask: "I found multiple Vite apps — which one should I package?"
-```
-1. ./apps/web (vite.config.ts)
-2. ./packages/prototype (vite.config.ts)
-3. ./examples/demo (vite.config.ts)
-
-Which prototype should I package for review?
+Also check package.json for CRA:
+```bash
+grep -l "react-scripts" */package.json package.json 2>/dev/null | head -3
 ```
 
-**If no results:** Ask once: "Where is your prototype? (path to the directory containing vite.config.ts)"
+**Match the result to a strategy:**
 
-**If the path is provided in `$ARGUMENTS`:** Use it directly, skip the search.
+| What you found | Framework | Strategy |
+|---|---|---|
+| `vite.config.*` | Vite/React | darts-bundle handles the build internally |
+| `next.config.*` | Next.js | Run `next build` → use `out/` directory |
+| `react-scripts` in package.json | Create React App | Run `npm run build` → use `build/` directory |
+| `svelte.config.js` | SvelteKit | Run `npm run build` → use `build/` directory |
+| `nuxt.config.*` | Nuxt | Run `npx nuxi generate` → use `.output/public/` |
+| `index.html` with no framework | Plain HTML | Use directory directly |
+| None of the above | Unknown | Ask: "What kind of project is this? I can bundle Vite, Next.js, React (CRA), SvelteKit, Nuxt, or plain HTML." |
+
+**If multiple apps found:** List them and ask which one to package.
+
+**If the path is provided in `$ARGUMENTS`:** Use it directly, detect its framework, skip the search.
 
 ---
 
@@ -65,6 +73,51 @@ Ask one question: "What should I call this review bundle? (e.g. 'Sprint 12 Revie
 If they press Enter or give no name, derive one from the prototype directory name.
 
 ---
+
+## Step 2b — Framework-specific pre-build
+
+For non-Vite frameworks, produce a static export before bundling. Run the appropriate command from the prototype directory:
+
+**Next.js:**
+Check if `output: 'export'` is in `next.config.*`. If not, add it temporarily:
+```bash
+# Check
+grep -q "output.*export" next.config.* 2>/dev/null || echo "needs config"
+```
+If missing, tell the designer: "I'll add `output: 'export'` to next.config.js temporarily to produce static HTML — I'll remove it after bundling." Then add `output: 'export'` to the next.config, run the build, and restore the file.
+
+```bash
+cd "$PROTOTYPE_PATH" && npx next build
+# Output is in ./out/
+```
+Set `STATIC_INPUT="$PROTOTYPE_PATH/out"`.
+
+**Create React App:**
+```bash
+cd "$PROTOTYPE_PATH" && npm run build
+# Output is in ./build/
+```
+Set `STATIC_INPUT="$PROTOTYPE_PATH/build"`.
+
+**SvelteKit:**
+```bash
+cd "$PROTOTYPE_PATH" && npm run build
+# Output is in ./build/
+```
+Set `STATIC_INPUT="$PROTOTYPE_PATH/build"`.
+
+**Nuxt:**
+```bash
+cd "$PROTOTYPE_PATH" && npx nuxi generate
+# Output is in ./.output/public/
+```
+Set `STATIC_INPUT="$PROTOTYPE_PATH/.output/public"`.
+
+**Plain HTML / already-built folder:** Set `STATIC_INPUT="$PROTOTYPE_PATH"`.
+
+**Vite:** No pre-build needed — darts-bundle handles it. Skip this step entirely.
+
+For non-Vite frameworks, pass `--input "$STATIC_INPUT"` to darts-bundle in Step 4 instead of `--input "$PROTOTYPE_PATH"`.
 
 ## Step 3 — Build the runtime (automatic)
 
@@ -114,9 +167,16 @@ This is a safe swap — HashRouter uses the `#` fragment which works from file:/
 Tell the designer upfront: "Bundling your prototype — Vite is compiling and inlining all assets. This usually takes 20–60 seconds..."
 
 ```bash
+# For Vite projects:
 node packages/darts-bundle/bin/darts-bundle.js \
   --name "$PROTOTYPE_NAME" \
   --input "$PROTOTYPE_PATH" \
+  --output "${PROTOTYPE_NAME// /-}-review.html"
+
+# For all other frameworks (use STATIC_INPUT from Step 2b):
+node packages/darts-bundle/bin/darts-bundle.js \
+  --name "$PROTOTYPE_NAME" \
+  --input "$STATIC_INPUT" \
   --output "${PROTOTYPE_NAME// /-}-review.html"
 ```
 
