@@ -11,6 +11,22 @@ export function showStorageBanner(): void {
   panel.prepend(banner);
 }
 
+// Screen key = hash fragment, or full pathname if no hash (comments made before any navigation)
+function screenKey(c: Comment): string {
+  if (!c.anchorData.pathname) return '';
+  return c.anchorData.pathname.match(/#.*$/)?.[0] ?? c.anchorData.pathname;
+}
+
+// Subtle per-screen tints applied when comments span multiple screens.
+// Index 0 = first screen seen; colors cycle if there are more than 5 screens.
+const SCREEN_PALETTES = [
+  { bg: 'rgba(255,255,255,0.04)', accent: 'rgba(124,92,191,0.55)'  },  // purple (default)
+  { bg: 'rgba(59,130,246,0.07)',  accent: 'rgba(99,130,246,0.60)'  },  // blue
+  { bg: 'rgba(20,184,166,0.07)',  accent: 'rgba(20,184,166,0.60)'  },  // teal
+  { bg: 'rgba(234,179,8,0.06)',   accent: 'rgba(234,179,8,0.55)'   },  // amber
+  { bg: 'rgba(249,115,22,0.06)',  accent: 'rgba(249,115,22,0.50)'  },  // orange
+];
+
 export function renderPanel(
   comments: Comment[],
   onFocus: (id: string) => void,
@@ -53,17 +69,31 @@ export function renderPanel(
   });
   panel.appendChild(filterBar);
 
-  // Comment list
+  // Chronological ranks: oldest comment = #1, newest = #N
+  const byAge = [...comments].sort((a, b) => a.createdAt - b.createdAt);
+  const rankMap = new Map<string, number>(byAge.map((c, i) => [c.id, i + 1]));
+
+  // Screen color index — assigned in first-seen order; only applied when > 1 screen present
+  const screenIndex = new Map<string, number>();
+  comments.forEach(c => {
+    const key = screenKey(c);
+    if (!screenIndex.has(key)) screenIndex.set(key, screenIndex.size);
+  });
+  const multiScreen = screenIndex.size > 1;
+
+  const colorFor = (c: Comment): number =>
+    multiScreen ? (screenIndex.get(screenKey(c)) ?? 0) % SCREEN_PALETTES.length : -1;
+
+  // Comment list — newest first
   const body = document.createElement('div');
   body.className = 'panel-body';
 
-  // Newest first
   const sorted = [...comments].sort((a, b) => b.createdAt - a.createdAt);
   const visible = sorted.filter(c => c.anchorStatus !== 'orphaned' && (currentFilter === 'all' || c.status === currentFilter));
   const orphans = sorted.filter(c => c.anchorStatus === 'orphaned');
 
-  visible.forEach((c, i) => {
-    const card = makeCard(c, i, onFocus, onToggleStatus, onEdit, onDelete);
+  visible.forEach(c => {
+    const card = makeCard(c, rankMap.get(c.id) ?? 1, colorFor(c), onFocus, onToggleStatus, onEdit, onDelete);
     if (c.id === newCommentId) card.classList.add('is-new');
     body.appendChild(card);
   });
@@ -75,7 +105,9 @@ export function renderPanel(
     label.className = 'orphan-label';
     label.textContent = `Orphaned comments (${orphans.length})`;
     section.appendChild(label);
-    orphans.forEach((c, i) => section.appendChild(makeCard(c, i, onFocus, onToggleStatus, onEdit, onDelete)));
+    orphans.forEach(c => section.appendChild(
+      makeCard(c, rankMap.get(c.id) ?? 1, colorFor(c), onFocus, onToggleStatus, onEdit, onDelete)
+    ));
     body.appendChild(section);
   }
 
@@ -93,7 +125,8 @@ const LINK_CSS = 'all: unset; cursor: pointer; font-size: 10px; color: #8878b8; 
 
 function makeCard(
   c: Comment,
-  i: number,
+  rank: number,
+  colorIdx: number,
   onFocus: (id: string) => void,
   onToggleStatus: (id: string) => void,
   onEdit?: (id: string) => void,
@@ -103,9 +136,15 @@ function makeCard(
   card.className = 'comment-card';
   card.dataset.commentId = c.id;
 
+  if (colorIdx >= 0) {
+    const p = SCREEN_PALETTES[colorIdx];
+    card.style.background = p.bg;
+    card.style.borderLeft = `3px solid ${p.accent}`;
+  }
+
   const num = document.createElement('div');
   num.className = 'comment-num';
-  num.innerHTML = `#${i + 1} <span class="status-badge ${c.anchorStatus === 'orphaned' ? 'orphaned' : c.status}">${c.anchorStatus === 'orphaned' ? 'orphaned' : c.status}</span>`;
+  num.innerHTML = `#${rank} <span class="status-badge ${c.anchorStatus === 'orphaned' ? 'orphaned' : c.status}">${c.anchorStatus === 'orphaned' ? 'orphaned' : c.status}</span>`;
 
   const text = document.createElement('div');
   text.className = 'comment-text';
@@ -118,7 +157,6 @@ function makeCard(
   const timeStr = d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
   meta.textContent = `${c.reviewer.name} · ${dateStr} ${timeStr}`;
 
-  // Action row: Mark resolved / Reopen · Edit · Delete
   const actions = document.createElement('div');
   actions.style.cssText = 'display: flex; gap: 10px; margin-top: 6px; align-items: center;';
 
@@ -176,9 +214,8 @@ export function flashPanelItem(id: string): void {
   const panel = getPanel();
   const target = panel.querySelector(`[data-comment-id="${id}"]`) as HTMLElement | null;
   if (!target) return;
-  // Remove and re-add to restart the animation
   target.classList.remove('is-flash');
-  void target.offsetWidth; // force reflow
+  void target.offsetWidth;
   target.classList.add('is-flash');
   target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   setTimeout(() => target.classList.remove('is-flash'), 1700);
