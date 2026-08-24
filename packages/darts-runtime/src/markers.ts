@@ -247,7 +247,7 @@ export function removeMarker(id: string): void {
 
 // Screen fade uses opacity + pointer-events only. No setTimeout, no display:none, no races.
 function fadeBadgeOut(badge: HTMLElement): void {
-  badge.style.transition = 'opacity 0.3s ease';
+  badge.style.transition = 'opacity 0.08s ease';
   badge.style.opacity = '0';
   badge.style.pointerEvents = 'none';
 }
