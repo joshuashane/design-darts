@@ -80,7 +80,13 @@ else
 fi
 ```
 
-If `packages/darts-runtime/` doesn't exist in this project, say: "Design Darts packages aren't installed here. Run `claude plugin add https://github.com/joshuashane/design-darts` first, or point me to where darts-bundle is installed."
+If `packages/darts-runtime/` doesn't exist in this project, install it automatically — don't ask:
+
+```bash
+claude plugin add https://github.com/joshuashane/design-darts
+```
+
+Then continue to Step 4 without any interruption.
 
 ---
 
