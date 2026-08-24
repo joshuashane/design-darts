@@ -84,18 +84,44 @@ If they give a different name, use it. If they say "go", "yes", "ok", "looks goo
 For non-Vite frameworks, produce a static export before bundling. Run the appropriate command from the prototype directory:
 
 **Next.js:**
-Check if `output: 'export'` is in `next.config.*`. If not, add it temporarily:
-```bash
-# Check
-grep -q "output.*export" next.config.* 2>/dev/null || echo "needs config"
-```
-If missing, tell the designer: "I'll add `output: 'export'` to next.config.js temporarily to produce static HTML — I'll remove it after bundling." Then add `output: 'export'` to the next.config, run the build, and restore the file.
+
+First, determine which kind of Next.js app this is:
 
 ```bash
-cd "$PROTOTYPE_PATH" && npx next build
-# Output is in ./out/
+grep -E "output|serverActions|appDir" next.config.* 2>/dev/null | head -5
+# Also check for API routes and auth
+ls pages/api src/app/api 2>/dev/null | head -5
+grep -r "getServerSideProps\|getStaticProps\|use server\|auth\|oidc\|oauth" src app pages --include="*.ts" --include="*.tsx" -l 2>/dev/null | head -5
 ```
-Set `STATIC_INPUT="$PROTOTYPE_PATH/out"`.
+
+**Case A — Static/exportable app** (no `output: 'standalone'`, no API routes, no auth):
+Add `output: 'export'` temporarily if missing, run `next build`, use `./out/`. Set `STATIC_INPUT="$PROTOTYPE_PATH/out"`.
+
+**Case B — Server-rendered app** (`output: 'standalone'`, OR has API routes/auth/SSR):
+Stop and explain the situation clearly before doing anything:
+
+```
+⚠️ This is a server-rendered Next.js app — it can't be packaged as a static offline file.
+
+I can create a "reviewable zip" instead: a self-contained local server the reviewer 
+runs on their machine. Here's what that means for them:
+
+• Requires Node.js 18+ installed
+• They run: node server.js (or double-click start.sh on Mac)  
+• Opens in their browser at http://localhost:3000
+• Fully interactive — all routes work
+• If your app has login (OIDC/auth), they'll need valid credentials to get past it
+• Live API calls work if they're on a network that can reach your backend
+• The zip will be large (~50–200 MB depending on your dependencies)
+
+This is more setup than a single HTML file, but it's the only way to get a 
+fully interactive review of a server-rendered app.
+
+Want me to build the reviewable zip? (yes / no — use the deployed URL instead)
+```
+
+If they say yes, proceed to build the reviewable zip (see Step 4b below).
+If they say no, suggest: "The deployed staging URL is the cleanest path for sharing CYCLOPS — share a direct link to the specific screen you want feedback on."
 
 **Angular:**
 ```bash
@@ -239,8 +265,85 @@ Attach sprint-12-review.html to your message.
 
 ---
 
+## Step 4b — Build reviewable zip (Next.js server-rendered only)
+
+If the designer agreed to the server-rendered zip approach:
+
+**1. Inject Design Darts into the app** — find the root layout or document file:
+```bash
+# App Router (Next.js 13+)
+ls src/app/layout.tsx app/layout.tsx 2>/dev/null
+# Pages Router
+ls pages/_document.tsx pages/_app.tsx 2>/dev/null
+```
+
+Add the Design Darts script just before `</body>` (or in the root layout's `<body>`):
+```tsx
+<script src="https://cdn.jsdelivr.net/npm/design-darts-runtime/dist/darts.iife.js" />
+```
+Or inline the IIFE from `packages/darts-runtime/dist/darts.iife.js` directly into a `<Script>` tag. Mark the change clearly so you can restore it after.
+
+**2. Build in standalone mode:**
+```bash
+cd "$PROTOTYPE_PATH" && npx next build
+# Produces .next/standalone/
+```
+
+**3. Assemble the zip:**
+```bash
+REVIEW_DIR="${PROTOTYPE_NAME// /-}-review"
+mkdir -p "$REVIEW_DIR"
+cp -r .next/standalone/. "$REVIEW_DIR/"
+cp -r .next/static "$REVIEW_DIR/.next/static"
+cp -r public "$REVIEW_DIR/public" 2>/dev/null || true
+
+# Create start scripts
+cat > "$REVIEW_DIR/start.sh" << 'EOF'
+#!/bin/bash
+echo "Starting review server at http://localhost:3000"
+node server.js
+EOF
+chmod +x "$REVIEW_DIR/start.sh"
+
+cat > "$REVIEW_DIR/start.bat" << 'EOF'
+@echo off
+echo Starting review server at http://localhost:3000
+node server.js
+EOF
+
+# Create README
+cat > "$REVIEW_DIR/README.txt" << 'EOF'
+To open this review:
+  Mac/Linux: double-click start.sh, or run: node server.js
+  Windows:   double-click start.bat
+  Then open: http://localhost:3000
+Requires Node.js 18+. Download at https://nodejs.org
+EOF
+
+zip -r "${REVIEW_DIR}.zip" "$REVIEW_DIR"
+rm -rf "$REVIEW_DIR"
+```
+
+**4. Restore the app** — remove the Design Darts script tag you added in step 1.
+
+**5. Report:**
+```
+✅ Reviewable zip ready: {name}-review.zip ({size} MB)
+
+Share this with reviewers along with these instructions:
+1. Unzip the file
+2. Open a terminal in the folder (or double-click start.sh)  
+3. Run: node server.js
+4. Open http://localhost:3000 in your browser
+5. Press C to enter comment mode, click any element to pin a comment
+6. When done, click Export feedback to download the JSON file
+
+Node.js required: https://nodejs.org (free, ~30 second install)
+```
+
 ## Rules
 
+- For server-rendered apps, ALWAYS show the ⚠️ caveat and get explicit confirmation before building the zip — never proceed silently
 - Never ask the designer to build the runtime manually — do it automatically in Step 3
 - Always search for vite.config.ts before asking where the prototype is
 - If multiple Vite apps are found, list them clearly and let the designer choose
