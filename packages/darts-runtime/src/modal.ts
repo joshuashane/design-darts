@@ -208,11 +208,6 @@ export function promptComment(
 
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') close(null);
-      if (e.key === 'Enter' && !e.shiftKey) {
-        const active = document.activeElement;
-        // Submit if not in textarea, or if in textarea and Ctrl/Cmd+Enter
-        if (active !== textarea || e.ctrlKey || e.metaKey) { e.preventDefault(); onSubmit(); }
-      }
     };
 
     const onOutside = (e: PointerEvent) => {
@@ -223,6 +218,20 @@ export function promptComment(
         close(null);
       }
     };
+
+    // stopPropagation inside the shadow DOM prevents document-level hotkeys (e.g. 'C' → arm mode)
+    // from firing while the user is typing. composedPath() is truncated for closed shadow roots
+    // at the document level, so the keyboard.ts guard can't detect focus inside shadow inputs.
+    textarea.addEventListener('keydown', (e: KeyboardEvent) => {
+      e.stopPropagation();
+      if (e.key === 'Escape') { e.preventDefault(); close(null); }
+      if (e.key === 'Enter' && !e.shiftKey && (e.ctrlKey || e.metaKey)) { e.preventDefault(); onSubmit(); }
+    });
+    nameInput.addEventListener('keydown', (e: KeyboardEvent) => {
+      e.stopPropagation();
+      if (e.key === 'Escape') { e.preventDefault(); close(null); }
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); onSubmit(); }
+    });
 
     sendBtn.addEventListener('click', onSubmit);
     document.addEventListener('keydown', onKey);
