@@ -71,9 +71,11 @@ cat angular.json 2>/dev/null | grep "\"defaultProject\"\|\"projects\"" | head -3
 
 ## Step 2 — Confirm bundle name
 
-Ask one question: "What should I call this review bundle? (e.g. 'Sprint 12 Review' — or press Enter to use the project name)"
+Derive a default name from the prototype directory (e.g. `ns-ds-claude-forum` → `"NS DS Claude Forum Review"`). Then say:
 
-If they press Enter or give no name, derive one from the prototype directory name.
+> "I'll call this **[derived name]** — reply with a different name to change it, or just say 'go' to start building."
+
+If they give a different name, use it. If they say "go", "yes", "ok", "looks good", or anything that isn't a new name, proceed immediately with the derived name.
 
 ---
 
