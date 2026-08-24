@@ -267,7 +267,12 @@ export function refreshAllMarkers(comments: Comment[], resolvedEls: Map<string, 
       return;
     }
     const el = resolvedEls.get(c.id);
-    if (!badge || !el) return;
+    if (!badge) return;
+    if (!el) {
+      // Orphaned on current screen — restore visibility so it stays clickable
+      fadeBadgeIn(badge);
+      return;
+    }
     positionMarker(badge, el, c.anchorData);
     updateBadgeColor(badge, c.status);
     fadeBadgeIn(badge); // always restore opacity — clears any lingering fade-out state

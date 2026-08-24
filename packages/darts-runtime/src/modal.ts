@@ -225,7 +225,8 @@ export function promptComment(
     textarea.addEventListener('keydown', (e: KeyboardEvent) => {
       e.stopPropagation();
       if (e.key === 'Escape') { e.preventDefault(); close(null); }
-      if (e.key === 'Enter' && !e.shiftKey && (e.ctrlKey || e.metaKey)) { e.preventDefault(); onSubmit(); }
+      // Shift+Enter for newline; plain Enter submits
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); onSubmit(); }
     });
     nameInput.addEventListener('keydown', (e: KeyboardEvent) => {
       e.stopPropagation();
