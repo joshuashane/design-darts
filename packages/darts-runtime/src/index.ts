@@ -1,4 +1,4 @@
-import { initShadowHost, setPanelCollapsed, getPanel } from './shadow-host.js';
+import { initShadowHost, setPanelCollapsed, getPanelCollapsed, getPanel } from './shadow-host.js';
 import { loadPayload, savePayload, onStorageUnavailable } from './store.js';
 import { buildAnchorData, resolveElement } from './anchor.js';
 import { arm, disarm, isArmed, isAnnotatable, onElementClick, onArm, onDisarm } from './mode.js';
@@ -173,10 +173,7 @@ function refresh(newId?: string): void {
 }
 
 function isPanelOpen(): boolean {
-  const host = document.querySelector('.tack-shadow-host') as HTMLElement | null;
-  if (!host?.shadowRoot) return false;
-  const panel = host.shadowRoot.getElementById('tack-panel');
-  return !!panel && !panel.classList.contains('is-collapsed');
+  return !getPanelCollapsed();
 }
 
 function currentPath(): string {
@@ -226,14 +223,15 @@ function focusComment(id: string): void {
   const bx = pinCenterX;
   const by = pinTipY;
 
+  // Scroll first so the badge is at its final position before the popover is placed
+  if (el) el.scrollIntoView({ block: 'center' });
+
   showCommentPopover(c, bx, by, {
     onToggleStatus: (cid) => { toggleStatus(cid); refresh(); },
     onEdit: (cid) => editComment(cid),
     onDelete: (cid) => deleteComment(cid),
     onClose: () => {},
   });
-
-  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 function toggleStatus(id: string): void {
@@ -416,6 +414,7 @@ function init(): void {
     savePayload(payload);
     resolvedEls.set(comment.id, el);
     addMarker(comment, el, payload.comments.length - 1);
+    setPanelCollapsed(false);
     refresh(comment.id);
 
     // Lawn-dart drop for newly placed pin

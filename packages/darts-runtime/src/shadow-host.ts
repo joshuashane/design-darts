@@ -500,6 +500,10 @@ export function initShadowHost(): void {
   _shadowRoot.appendChild(_panelTab);
 }
 
+export function getPanelCollapsed(): boolean {
+  return !!_panel?.classList.contains('is-collapsed');
+}
+
 export function setPanelCollapsed(collapsed: boolean): void {
   if (!_panel || !_panelTab) return;
   _panel.classList.toggle('is-collapsed', collapsed);
