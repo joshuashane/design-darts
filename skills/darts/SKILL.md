@@ -25,7 +25,7 @@ Package the current prototype into a single shareable HTML file with the tack co
 
 **Do NOT activate for:**
 - Building a prototype from scratch
-- Collecting feedback after it has already been sent — that is `/darts-ingest`
+- Collecting feedback after it has already been sent — use the Import button in Design Darts
 
 ---
 
@@ -93,7 +93,7 @@ To share with reviewers:
 • When done, they click "Send feedback" to download a JSON file
 • Send the JSON file back to you
 
-Once you have the JSON files, run /darts-ingest to triage.
+Once you have the JSON files, import them using the Import button in the Design Darts overlay.
 ```
 
 ---
