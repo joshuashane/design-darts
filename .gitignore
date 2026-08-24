@@ -1,0 +1,5 @@
+node_modules/
+.tack-build/
+test-results/
+*.local
+.DS_Store

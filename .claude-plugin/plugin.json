@@ -1,0 +1,6 @@
+{
+  "name": "design-darts",
+  "description": "Pin comments directly on HTML prototypes and collect stakeholder feedback — no install required for reviewers. Package prototypes as single offline-ready files, import feedback JSON to see pins overlaid, and triage with Claude Code. Includes /darts (package for review) and /darts-ingest (triage feedback).",
+  "category": "default",
+  "tags": ["design", "feedback", "prototype", "review", "annotation", "comment", "darts", "ux"]
+}

@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Tack Demo</title></head>
+<body>
+  <!-- Tier 1: data-testid -->
+  <button data-testid="submit-btn" style="padding:12px 24px">Submit</button>
+
+  <!-- Tier 2: id -->
+  <div id="hero-section" style="padding:24px;background:#f5f5f5;margin:16px 0">Hero</div>
+
+  <!-- Tier 3: stable semantic class -->
+  <nav class="primary-nav" style="padding:16px">Navigation</nav>
+
+  <!-- Tier 4: nth-child only (no id, no testid, no stable class) -->
+  <ul style="list-style:none">
+    <li style="padding:8px">Item A</li>
+    <li style="padding:8px">Item B</li>
+    <li style="padding:8px">Item C</li>
+  </ul>
+
+  <!-- Overflow hidden ancestor (tests marker clipping issue) -->
+  <div style="overflow:hidden;width:200px;height:60px;border:1px solid #ccc">
+    <div data-testid="clipped-element" style="padding:8px">Clipped content</div>
+  </div>
+
+  <script src="/packages/tack-runtime/dist/tack.iife.js"></script>
+</body>
+</html>

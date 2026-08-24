@@ -1,0 +1,10 @@
+{
+  "name": "design-darts",
+  "private": true,
+  "workspaces": ["packages/*"],
+  "scripts": {
+    "build:runtime": "node packages/tack-runtime/build.js",
+    "test": "playwright test",
+    "test:ingest": "node --test tests/ingest/merge.test.js"
+  }
+}
