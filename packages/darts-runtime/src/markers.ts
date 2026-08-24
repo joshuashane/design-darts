@@ -1,4 +1,5 @@
 import type { Comment, AnchorData } from './schema.js';
+import { hashOf, isOnCurrentScreen } from './utils.js';
 
 const _markers = new Map<string, HTMLElement>();
 const _clickCallbacks: Array<(id: string) => void> = [];
@@ -243,20 +244,6 @@ export function removeMarker(id: string): void {
   _markers.delete(id);
 }
 
-/** Extract just the hash fragment from a stored pathname, e.g. "#/dashboard" */
-function hashOf(pathname: string): string {
-  const m = pathname.match(/#.*$/);
-  return m ? m[0] : '';
-}
-
-function isOnCurrentScreen(anchorPathname: string | undefined): boolean {
-  if (!anchorPathname) return true; // no path info — show everywhere
-  const commentHash = hashOf(anchorPathname);
-  const curHash = location.hash;
-  // Comment with no hash = added before any navigation → show on current default screen
-  if (!commentHash) return !curHash || curHash === '#/' || curHash === '#/policies' || curHash === '#';
-  return commentHash === curHash;
-}
 
 // Screen fade uses opacity + pointer-events only. No setTimeout, no display:none, no races.
 function fadeBadgeOut(badge: HTMLElement): void {

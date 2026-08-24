@@ -62,10 +62,6 @@ function formatMarkdown(payload: StoragePayload): string {
   return lines.join('\n');
 }
 
-export async function copyForClaudeCode(payload: StoragePayload): Promise<void> {
-  const md = formatMarkdown(payload);
-  await navigator.clipboard.writeText(md);
-}
 
 export async function sendFeedback(payload: StoragePayload, showStatus: (msg: string) => void): Promise<void> {
   downloadJSON(payload);

@@ -11,7 +11,7 @@ import { startObservers } from './observer.js';
 import { bindKeyboard } from './keyboard.js';
 import { isPresenterMode, applyPresenterMode } from './presenter.js';
 import { handleDeepLink } from './deeplinking.js';
-import { generateId, contentHash } from './utils.js';
+import { generateId, contentHash, hashOf, isOnCurrentScreen } from './utils.js';
 import { showCommentPopover, hideCommentPopover } from './comment-popover.js';
 import type { Comment, StoragePayload } from './schema.js';
 
@@ -320,18 +320,6 @@ function togglePresenter(): void {
   applyPresenterMode(_presenterHidden);
 }
 
-function hashOf(pathname: string): string {
-  const m = pathname.match(/#.*$/);
-  return m ? m[0] : '';
-}
-
-function isOnCurrentScreen(anchorPathname: string | undefined): boolean {
-  if (!anchorPathname) return true;
-  const commentHash = hashOf(anchorPathname);
-  const curHash = location.hash;
-  if (!commentHash) return !curHash || curHash === '#/' || curHash === '#/policies' || curHash === '#';
-  return commentHash === curHash;
-}
 
 function resolveAll(): void {
   payload.comments.forEach((c, i) => {
@@ -508,7 +496,7 @@ function init(): void {
       const commentHash = storedPathname.match(/#.*$/)?.[0] ?? '';
       const curHash = location.hash;
       const onThisScreen = !commentHash
-        ? (!curHash || curHash === '#/' || curHash === '#/policies' || curHash === '#')
+        ? true // pre-navigation comment; element resolution handles badge hiding
         : commentHash === curHash;
 
       if (onThisScreen) {

@@ -28,3 +28,21 @@ export function contentHash(s: string): number {
   for (let i = 0; i < s.length; i++) h = (h * 33) ^ s.charCodeAt(i);
   return h >>> 0;
 }
+
+/** Extract the hash fragment from a stored pathname, e.g. '#/dashboard' */
+export function hashOf(pathname: string): string {
+  const m = pathname.match(/#.*$/);
+  return m ? m[0] : '';
+}
+
+/**
+ * Returns true if a comment belongs to the current screen.
+ * Comments with no hash (made before any navigation) are always shown —
+ * element resolution handles badge hiding when the element doesn't exist here.
+ */
+export function isOnCurrentScreen(anchorPathname: string | undefined): boolean {
+  if (!anchorPathname) return true;
+  const commentHash = hashOf(anchorPathname);
+  if (!commentHash) return true;
+  return commentHash === location.hash;
+}
