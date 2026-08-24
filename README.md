@@ -8,10 +8,10 @@ Design Darts packages any Vite/React prototype as a single, offline-ready HTML f
 
 ```bash
 # 1. Build the runtime (one-time setup)
-node packages/tack-runtime/build.js
+node packages/darts-runtime/build.js
 
 # 2. Bundle your prototype into a single shareable HTML file
-node packages/tack-bundle/bin/tack-bundle.js \
+node packages/darts-bundle/bin/darts-bundle.js \
   --name "Sprint 12 Review" \
   --input ./my-prototype \
   --output sprint12-review.html
@@ -33,7 +33,7 @@ Say any of these mid-session and Claude Code will handle the rest:
 
 > "share for review" · "ship for review" · "ready for review" · "send to stakeholders" · "share with client" · "make shareable" · "package for review" · "add a comment layer" · "design darts" · "single file" · "shareable html"
 
-Locates your prototype, runs `tack-bundle`, produces a single `.html` file, and generates reviewer instructions you can paste into an email or Slack message.
+Locates your prototype, runs `darts-bundle`, produces a single `.html` file, and generates reviewer instructions you can paste into an email or Slack message.
 
 ## Install as a Claude Code plugin
 
@@ -45,10 +45,10 @@ claude plugin add https://github.com/joshuashane/design-darts
 
 | Package | Purpose |
 |---|---|
-| `tack-runtime` | In-browser comment overlay, compiled to a single IIFE |
-| `tack-bundle` | CLI — inlines all assets as data URIs and injects the runtime |
-| `tack-ingest` | CLI — merges feedback JSON files into a triage markdown report (for developers) |
-| `tack-vite-plugin` | Vite plugin — stamps source file + line on JSX elements so pins link to code |
+| `darts-runtime` | In-browser comment overlay, compiled to a single IIFE |
+| `darts-bundle` | CLI — inlines all assets as data URIs and injects the runtime |
+| `darts-ingest` | CLI — merges feedback JSON files into a triage markdown report (for developers) |
+| `darts-vite-plugin` | Vite plugin — stamps source file + line on JSX elements so pins link to code |
 
 ## License
 

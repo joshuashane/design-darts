@@ -11,7 +11,7 @@ Load this skill when a designer says any of:
 ## What it does
 
 1. Locates the Vite/React prototype in the repo
-2. Runs `tack-bundle` to inline all assets and inject the tack runtime
+2. Runs `darts-bundle` to inline all assets and inject the darts runtime
 3. Outputs a single `.html` file the designer can email or drop in Slack
 4. Gives the designer instructions to pass to their reviewers
 
@@ -29,4 +29,4 @@ Run `/darts-ingest` once you have the JSON files.
 
 ## Notes
 
-`tack-bundle` must be available in the same repo as the prototype. For designers working in standalone app repos, install globally: `npm install -g tack-bundle`, or invoke with `npx tack-bundle`.
+`darts-bundle` must be available in the same repo as the prototype. For designers working in standalone app repos, install globally: `npm install -g darts-bundle`, or invoke with `npx darts-bundle`.

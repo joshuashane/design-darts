@@ -58,17 +58,17 @@ Ask one question at a time:
 
 ```bash
 # Check if the runtime is already built
-ls packages/tack-runtime/dist/tack.iife.js 2>/dev/null && echo "runtime ready" || node packages/tack-runtime/build.js
+ls packages/darts-runtime/dist/darts.iife.js 2>/dev/null && echo "runtime ready" || node packages/darts-runtime/build.js
 ```
 
-Note: `packages/tack-bundle` must be installed in the same repo as the prototype. For designers working in their own app repos, install tack-bundle globally (`npm install -g tack-bundle`) or via `npx tack-bundle`.
+Note: `packages/darts-bundle` must be installed in the same repo as the prototype. For designers working in their own app repos, install darts-bundle globally (`npm install -g darts-bundle`) or via `npx darts-bundle`.
 
 ---
 
-## Step 4 — Run tack-bundle
+## Step 4 — Run darts-bundle
 
 ```bash
-node packages/tack-bundle/dist/cli.js \
+node packages/darts-bundle/dist/cli.js \
   --name "$PROTOTYPE_NAME" \
   --input "$PROTOTYPE_PATH" \
   --output "${PROTOTYPE_NAME// /-}-review.html" \
@@ -100,7 +100,7 @@ Once you have the JSON files, run /darts-ingest to triage.
 
 ## Rules
 
-- Never run tack-bundle without confirming the prototype path and bundle name
+- Never run darts-bundle without confirming the prototype path and bundle name
 - If the runtime is not built, build it silently before bundling
 - Always report the output file path and size after bundling
 - If the bundle exceeds 10 MB, suggest a hosted alternative and warn the designer

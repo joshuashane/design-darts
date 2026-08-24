@@ -462,7 +462,7 @@ function init(): void {
     const incoming = (parsed as { comments?: unknown[] }).comments;
     if (!Array.isArray(incoming)) { showImportToast('error', 'No comments found in file'); return; }
 
-    // Dedup key: same formula as tack-ingest
+    // Dedup key: same formula as darts-ingest
     const existingKeys = new Set(payload.comments.map(c =>
       `${c.anchorData.cssSelector}::${c.reviewer.name}::${contentHash(c.text)}`
     ));

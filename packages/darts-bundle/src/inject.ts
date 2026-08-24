@@ -14,14 +14,14 @@ export interface InjectOptions {
 
 function getRuntimeCode(): string {
   const candidates = [
-    path.resolve(__dirname, '../../tack-runtime/dist/tack.iife.js'),
-    path.resolve(__dirname, '../../../packages/tack-runtime/dist/tack.iife.js'),
+    path.resolve(__dirname, '../../darts-runtime/dist/darts.iife.js'),
+    path.resolve(__dirname, '../../../packages/darts-runtime/dist/darts.iife.js'),
   ];
   for (const p of candidates) {
     if (fs.existsSync(p)) return fs.readFileSync(p, 'utf-8');
   }
   throw new Error(
-    'tack-runtime/dist/tack.iife.js not found. Run `node packages/tack-runtime/build.js` first.'
+    'darts-runtime/dist/darts.iife.js not found. Run `node packages/darts-runtime/build.js` first.'
   );
 }
 

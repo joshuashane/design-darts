@@ -8,7 +8,7 @@ test.beforeAll(() => {
   const outputPath = path.resolve('examples/demo-prototype/demo-review.html');
   if (!fs.existsSync(outputPath)) {
     execSync(
-      'node packages/tack-runtime/build.js && node packages/tack-bundle/dist/cli.js --name "Test" --input examples/demo-prototype --output examples/demo-prototype/demo-review.html',
+      'node packages/darts-runtime/build.js && node packages/darts-bundle/dist/cli.js --name "Test" --input examples/demo-prototype --output examples/demo-prototype/demo-review.html',
       { stdio: 'inherit' }
     );
   }

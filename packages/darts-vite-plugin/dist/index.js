@@ -47,12 +47,12 @@ const generator_1 = __importDefault(require("@babel/generator"));
  * Strip from production builds by NOT including this plugin in the production vite config.
  *
  * Usage in vite.config.ts (review builds only):
- *   import { tackVitePlugin } from '@tack/vite-plugin';
+ *   import { tackVitePlugin } from 'darts-vite-plugin';
  *   plugins: [react(), tackVitePlugin()]
  */
 function tackVitePlugin() {
     return {
-        name: 'tack-vite-plugin',
+        name: 'darts-vite-plugin',
         enforce: 'pre',
         transform(code, id) {
             // Only process JSX/TSX files

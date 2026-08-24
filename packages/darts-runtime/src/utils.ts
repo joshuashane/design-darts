@@ -11,7 +11,7 @@ export function debounce<T extends (...args: unknown[]) => void>(fn: T, ms: numb
   return ((...args) => { clearTimeout(timer); timer = setTimeout(() => fn(...args), ms); }) as T;
 }
 
-// Reserved for future use by tack-ingest
+// Reserved for future use by darts-ingest
 export function normalizePageKey(url: string): string {
   try {
     const u = new URL(url, location.href);
@@ -22,7 +22,7 @@ export function normalizePageKey(url: string): string {
 }
 
 /** djb2-based hash — good enough for dedup, not cryptographic */
-// Reserved for future use by tack-ingest
+// Reserved for future use by darts-ingest
 export function contentHash(s: string): number {
   let h = 5381;
   for (let i = 0; i < s.length; i++) h = (h * 33) ^ s.charCodeAt(i);

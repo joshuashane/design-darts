@@ -8,7 +8,7 @@ const BUDGET_BYTES = 40 * 1024;
 async function build() {
   const result = await esbuild.build({
     entryPoints: ['src/index.ts'],
-    outfile: 'dist/tack.iife.js',
+    outfile: 'dist/darts.iife.js',
     bundle: true,
     minify: true,
     format: 'iife',
@@ -18,7 +18,7 @@ async function build() {
     logLevel: 'info',
   });
 
-  const raw = fs.readFileSync('dist/tack.iife.js');
+  const raw = fs.readFileSync('dist/darts.iife.js');
   const gz = zlib.gzipSync(raw);
   const kb = (gz.length / 1024).toFixed(1);
   console.log(`Bundle: ${(raw.length / 1024).toFixed(1)} KB raw, ${kb} KB gzipped`);

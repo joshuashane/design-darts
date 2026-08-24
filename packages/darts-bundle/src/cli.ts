@@ -18,7 +18,7 @@ function parseArgs(): { name: string; input: string; output: string; sink?: stri
 
 async function main(): Promise<void> {
   const { name, input, output, sink } = parseArgs();
-  console.log(`\n📌 tack-bundle — packaging "${name}"\n`);
+  console.log(`\n📌 darts-bundle — packaging "${name}"\n`);
 
   const isVite = fs.existsSync(path.join(input, 'vite.config.ts')) ||
                  fs.existsSync(path.join(input, 'vite.config.js'));

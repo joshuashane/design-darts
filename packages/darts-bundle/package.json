@@ -1,10 +1,10 @@
 {
-  "name": "@tack/bundle",
+  "name": "darts-bundle",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "bin": {
-    "tack-bundle": "bin/tack-bundle.js"
+    "darts-bundle": "bin/darts-bundle.js"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json"

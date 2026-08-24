@@ -1,5 +1,5 @@
 {
-  "name": "@tack/runtime",
+  "name": "darts-runtime",
   "version": "0.1.0",
   "private": true,
   "scripts": {

@@ -1,9 +1,9 @@
 {
-  "name": "@tack/ingest",
+  "name": "darts-ingest",
   "version": "0.1.0",
   "private": true,
   "bin": {
-    "tack-ingest": "bin/tack-ingest.js"
+    "darts-ingest": "bin/darts-ingest.js"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json"
