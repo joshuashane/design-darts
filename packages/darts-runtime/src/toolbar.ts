@@ -49,10 +49,13 @@ export function renderToolbar(_commentCount: number): void {
       </button>
     `;
 
-    toolbar.querySelector('#tack-arm-btn')!.addEventListener('click', () => isArmed() ? disarm() : arm());
-    toolbar.querySelector('#tack-import-btn')!.addEventListener('click', () => fileInput.click());
-    toolbar.querySelector('#tack-send-btn')!.addEventListener('click', () => _onSend?.());
-    toolbar.querySelector('#tack-presenter-btn')!.addEventListener('click', () => _onPresenter?.());
+    // stopPropagation prevents clicks on the Design Darts toolbar from bubbling
+    // out of the shadow DOM and triggering outside-click handlers on dialogs /
+    // side sheets / popovers in the prototype, which would dismiss them.
+    toolbar.querySelector('#tack-arm-btn')!.addEventListener('click', (e) => { e.stopPropagation(); isArmed() ? disarm() : arm(); });
+    toolbar.querySelector('#tack-import-btn')!.addEventListener('click', (e) => { e.stopPropagation(); fileInput.click(); });
+    toolbar.querySelector('#tack-send-btn')!.addEventListener('click', (e) => { e.stopPropagation(); _onSend?.(); });
+    toolbar.querySelector('#tack-presenter-btn')!.addEventListener('click', (e) => { e.stopPropagation(); _onPresenter?.(); });
     _rendered = true;
   }
 

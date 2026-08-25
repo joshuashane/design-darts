@@ -67,6 +67,8 @@ cat angular.json 2>/dev/null | grep "\"defaultProject\"\|\"projects\"" | head -3
 
 **If the path is provided in `$ARGUMENTS`:** Use it directly, detect its framework, skip the search.
 
+**If the designer mentions a custom Vite config path** (e.g. `--config src/path/to/prototype.vite.config.ts`): treat as a Vite project, run `vite build --config <path>` to produce a static output directory, then pass that directory as `STATIC_INPUT` to darts-bundle (same as the non-Vite path in Step 4). Ask the designer where the build output lands if not obvious.
+
 ---
 
 ## Step 2 — Derive bundle name

@@ -516,10 +516,10 @@ export function initShadowHost(): void {
         (_panelTab as HTMLElement).style.top = `${_tabTop}px`;
       }
     };
-    const onUp = () => {
+    const onUp = (ev: PointerEvent) => {
       (_panelTab as HTMLElement).removeEventListener('pointermove', onMove);
       (_panelTab as HTMLElement).removeEventListener('pointerup', onUp);
-      if (!dragging) setPanelCollapsed(false);
+      if (!dragging) { ev.stopPropagation(); setPanelCollapsed(false); }
     };
     (_panelTab as HTMLElement).addEventListener('pointermove', onMove);
     (_panelTab as HTMLElement).addEventListener('pointerup', onUp);
