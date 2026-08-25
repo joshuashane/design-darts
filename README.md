@@ -2,46 +2,63 @@
 
 Pin comments directly on HTML prototypes and collect stakeholder feedback — no install required for reviewers.
 
-Design Darts packages any Vite/React prototype as a single, offline-ready HTML file with a comment overlay injected. Stakeholders open the file in any browser, click elements to drop comment pins, type feedback, and export a JSON file. Designers import that JSON to see all pins overlaid on the prototype.
+Design Darts packages your prototype into a single offline-ready HTML file with a comment overlay injected. Stakeholders open the file in any browser, click elements to drop comment pins, type feedback, and export a JSON file. You import that JSON to see every pin overlaid exactly where they left it.
 
 ![Comment pin overlaid on a prototype table](docs/screenshot.png)
 
-## Quick start
+---
 
-```bash
-# 1. Build the runtime (one-time setup)
-node packages/darts-runtime/build.js
-
-# 2. Bundle your prototype into a single shareable HTML file
-node packages/darts-bundle/bin/darts-bundle.js \
-  --name "Sprint 12 Review" \
-  --input ./my-prototype \
-  --output sprint12-review.html
-
-# 3. Share sprint12-review.html — opens in any browser, zero install for reviewers
-```
-
-Reviewers press **C** to enter comment mode, click any element, type a note, and click **Export feedback** to download a JSON file. Send the JSON back to you.
-
-To see their comments: open the same HTML file, click the **↑ Import** button, and select their JSON. All pins appear overlaid at exactly where they clicked.
-
-## Claude Code skill
-
-Install this repo as a Claude Code plugin to get the `/darts` slash command:
-
-### `/darts` — Share for review
-
-Say any of these mid-session and Claude Code will handle the rest:
-
-> "share for review" · "ship for review" · "ready for review" · "send to stakeholders" · "share with client" · "make shareable" · "package for review" · "add a comment layer" · "design darts" · "single file" · "shareable html"
-
-Locates your prototype, runs `darts-bundle`, produces a single `.html` file, and generates reviewer instructions you can paste into an email or Slack message.
-
-## Install as a Claude Code plugin
+## Install
 
 ```bash
 claude plugin add https://github.com/joshuashane/design-darts
 ```
+
+---
+
+## For designers — packaging a prototype
+
+Once the plugin is installed, just tell Claude Code what you want:
+
+> "share for review" · "ship for review" · "ready for review" · "send to stakeholders" · "share with client" · "package for review" · "add a comment layer" · "design darts" · "single file" · "shareable HTML"
+
+Claude will detect your framework, build the prototype, inject the overlay, and produce a single `.html` file. It also generates reviewer instructions you can paste directly into Slack or email.
+
+**Supported frameworks:** Vite · React (CRA) · Next.js · Angular · Storybook · SvelteKit · Nuxt · plain HTML
+
+### Or run the CLI directly
+
+```bash
+node packages/darts-bundle/bin/darts-bundle.js \
+  --name "Sprint 12 Review" \
+  --input ./my-prototype \
+  --output sprint-12-review.html
+```
+
+---
+
+## For reviewers — leaving feedback
+
+Open the `.html` file in any browser — no internet connection or account needed.
+
+| Action | How |
+|---|---|
+| Enter comment mode | Press **C** (or click **Comment** in the toolbar) |
+| Pin a comment | Click any element on the page |
+| Submit | Press **Enter** (Shift+Enter for a new line) |
+| Reposition a pin | Drag it to a new element |
+| Resolve a comment | Click the ✓ on the pin or in the comments panel |
+| Export feedback | Click **Export feedback** in the toolbar — saves a `.json` file |
+
+Send the exported JSON file back to the designer.
+
+---
+
+## For designers — importing feedback
+
+Open your review file, click **↑ Import** in the toolbar, and select the reviewer's JSON. All their pins appear overlaid at exactly where they clicked, with names and timestamps. You can import from multiple reviewers — Design Darts deduplicates automatically.
+
+---
 
 ## Packages
 
@@ -49,8 +66,10 @@ claude plugin add https://github.com/joshuashane/design-darts
 |---|---|
 | `darts-runtime` | In-browser comment overlay, compiled to a single IIFE |
 | `darts-bundle` | CLI — inlines all assets as data URIs and injects the runtime |
-| `darts-ingest` | CLI — merges feedback JSON files into a triage markdown report (for developers) |
+| `darts-ingest` | CLI — merges feedback JSON files into a triage markdown report |
 | `darts-vite-plugin` | Vite plugin — stamps source file + line on JSX elements so pins link to code |
+
+---
 
 ## License
 
