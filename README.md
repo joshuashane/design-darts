@@ -4,6 +4,8 @@ Pin comments directly on HTML prototypes and collect stakeholder feedback — no
 
 Design Darts packages any Vite/React prototype as a single, offline-ready HTML file with a comment overlay injected. Stakeholders open the file in any browser, click elements to drop comment pins, type feedback, and export a JSON file. Designers import that JSON to see all pins overlaid on the prototype.
 
+![Comment pin overlaid on a prototype table](docs/screenshot.png)
+
 ## Quick start
 
 ```bash
