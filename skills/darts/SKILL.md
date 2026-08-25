@@ -171,27 +171,37 @@ Set `STATIC_INPUT="$PROTOTYPE_PATH/.output/public"`.
 
 For non-Vite frameworks, pass `--input "$STATIC_INPUT"` to darts-bundle in Step 4 instead of `--input "$PROTOTYPE_PATH"`.
 
-## Step 3 — Build the runtime (automatic)
+## Step 3 — Locate darts tools (automatic)
 
-Check if the runtime is built and build it silently if not — never ask the designer to do this manually:
+The darts CLI tools may live in the plugin installation directory or in `~/.design-darts/`. Resolve `DARTS_HOME` silently — never ask the designer to do this manually:
 
 ```bash
+# Check plugin-relative path first, then the stable home location
 if ls packages/darts-runtime/dist/darts.iife.js > /dev/null 2>&1; then
-  echo "runtime ready"
+  echo "DARTS_HOME=."
+elif ls "$HOME/.design-darts/packages/darts-runtime/dist/darts.iife.js" > /dev/null 2>&1; then
+  echo "DARTS_HOME=$HOME/.design-darts"
 else
-  echo "Building Design Darts runtime..."
-  node packages/darts-runtime/build.js
-  echo "Runtime built."
+  echo "not found"
 fi
 ```
 
-If `packages/darts-runtime/` doesn't exist in this project, install it automatically — don't ask:
+**If not found in either location**, clone to `~/.design-darts/` automatically — don't ask:
 
 ```bash
-claude plugin add https://github.com/joshuashane/design-darts
+git clone --depth 1 https://github.com/joshuashane/design-darts.git "$HOME/.design-darts"
 ```
 
-Then continue to Step 4 without any interruption.
+Then build the runtime if the dist file is missing:
+
+```bash
+if ! ls "$DARTS_HOME/packages/darts-runtime/dist/darts.iife.js" > /dev/null 2>&1; then
+  echo "Building Design Darts runtime..."
+  node "$DARTS_HOME/packages/darts-runtime/build.js"
+fi
+```
+
+Use `$DARTS_HOME` as the prefix for all darts CLI calls in Step 4. Continue without interruption.
 
 ---
 
@@ -220,13 +230,13 @@ Tell the designer upfront: "Bundling your prototype — Vite is compiling and in
 
 ```bash
 # For Vite projects:
-node packages/darts-bundle/bin/darts-bundle.js \
+node "$DARTS_HOME/packages/darts-bundle/bin/darts-bundle.js" \
   --name "$PROTOTYPE_NAME" \
   --input "$PROTOTYPE_PATH" \
   --output "${PROTOTYPE_NAME// /-}-review.html"
 
 # For all other frameworks (use STATIC_INPUT from Step 2b):
-node packages/darts-bundle/bin/darts-bundle.js \
+node "$DARTS_HOME/packages/darts-bundle/bin/darts-bundle.js" \
   --name "$PROTOTYPE_NAME" \
   --input "$STATIC_INPUT" \
   --output "${PROTOTYPE_NAME// /-}-review.html"

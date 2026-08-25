@@ -14,6 +14,19 @@ Design Darts packages your prototype into a single offline-ready HTML file with 
 claude plugin add https://github.com/joshuashane/design-darts
 ```
 
+**If the plugin command doesn't find the skill** (Claude Code plugin support varies by version), the skill will automatically clone the tools to `~/.design-darts/` on first use — no manual setup needed. You can also run the CLI directly without any plugin installation:
+
+```bash
+# Clone once to a stable location
+git clone --depth 1 https://github.com/joshuashane/design-darts.git ~/.design-darts
+
+# Then bundle any prototype
+node ~/.design-darts/packages/darts-bundle/bin/darts-bundle.js \
+  --name "My Prototype Review" \
+  --input ./my-prototype \
+  --output my-prototype-review.html
+```
+
 ---
 
 ## For designers — packaging a prototype
