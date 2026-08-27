@@ -10,7 +10,7 @@
   "plugins": [
     {
       "name": "design-darts",
-      "source": ".",
+      "source": "./plugins/design-darts",
       "description": "Pin comments directly on HTML prototypes and collect stakeholder feedback — no install required for reviewers. Package prototypes as single offline-ready files, import feedback JSON to see all pins overlaid. One command, one shareable HTML file. Includes /darts.",
       "version": "1.0.0"
     }
