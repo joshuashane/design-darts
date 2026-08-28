@@ -1,3 +1,4 @@
+/* Design Darts — Joshua Stone | https://github.com/joshuashane/design-darts */
 "use strict";var __tack_iife__=(()=>{var D=null,k=null,M=null,E=null,oe=80,At=`
   :host { all: initial; }
   *, *::before, *::after { box-sizing: border-box; }

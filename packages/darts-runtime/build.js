@@ -16,6 +16,7 @@ async function build() {
     target: ['es2017'],
     sourcemap: 'external',
     logLevel: 'info',
+    banner: { js: '/* Design Darts — Joshua Stone | https://github.com/joshuashane/design-darts */' },
   });
 
   const raw = fs.readFileSync('dist/darts.iife.js');
