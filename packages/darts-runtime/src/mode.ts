@@ -63,6 +63,7 @@ function createBanner(): HTMLElement {
 function createOverlay(): HTMLElement {
   const el = document.createElement('div');
   el.setAttribute('data-tack-ui', '');
+  el.setAttribute('data-tack-overlay', '');
   Object.assign(el.style, {
     position: 'fixed',
     inset: '0',

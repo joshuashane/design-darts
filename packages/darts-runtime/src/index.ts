@@ -347,6 +347,23 @@ function init(): void {
 
   initShadowHost();
   setPanelCollapsed(true); // panel starts collapsed; opens when user wants it
+
+  // Registered here — at page load, before any React Aria (or similar) overlay
+  // can mount and add its own capture listener. Listeners on the same target+phase
+  // fire in registration order, so ours runs first and can bail out with
+  // stopImmediatePropagation when the event originates from Design Darts UI.
+  //
+  // Only stops for the shadow host (covers all toolbar/panel clicks — events from
+  // inside the closed shadow DOM are retargeted to the host) and the arm-mode
+  // overlay. Badges are intentionally excluded so drag still works.
+  document.addEventListener('pointerdown', (e: PointerEvent) => {
+    const t = e.target as Element | null;
+    if (!t) return;
+    if (t.classList.contains('tack-shadow-host') || t.hasAttribute('data-tack-overlay')) {
+      e.stopImmediatePropagation();
+    }
+  }, { capture: true });
+
   resolveAll();
 
   payload.comments.forEach((c, i) => {
