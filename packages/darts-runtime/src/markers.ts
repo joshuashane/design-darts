@@ -91,12 +91,35 @@ function ensureLayer(): HTMLElement {
   return _layer;
 }
 
-function positionMarker(badge: HTMLElement, el: Element, anchorData?: AnchorData): void {
+// Walk up the DOM to find the nearest ancestor with non-zero dimensions.
+// Used when the anchor element is hidden (e.g. inside a collapsed accordion row).
+function findVisibleAncestor(el: Element): Element | null {
+  let node: Element | null = el.parentElement;
+  while (node && node !== document.body) {
+    const r = node.getBoundingClientRect();
+    if (r.width > 0 || r.height > 0) return node;
+    node = node.parentElement;
+  }
+  return null;
+}
+
+// Returns true when the element is collapsed and the badge was reparented to an ancestor.
+function positionMarker(badge: HTMLElement, el: Element, anchorData?: AnchorData): boolean {
   const rect = el.getBoundingClientRect();
   if (!rect.width && !rect.height) {
+    // Anchor element is hidden — find the nearest visible ancestor to attach to
+    const ancestor = findVisibleAncestor(el);
+    if (!ancestor) {
+      badge.style.visibility = 'hidden';
+      return false;
+    }
+    const aRect = ancestor.getBoundingClientRect();
+    badge.style.visibility = 'visible';
     badge.style.display = 'block';
-    badge.style.visibility = 'hidden';
-    return;
+    // Position at the right edge of the ancestor row, vertically centered
+    badge.style.left = `${aRect.right - 26}px`;
+    badge.style.top  = `${aRect.top + aRect.height / 2 - 16}px`;
+    return true; // collapsed
   }
   badge.style.visibility = 'visible';
   badge.style.display = 'block';
@@ -110,6 +133,7 @@ function positionMarker(badge: HTMLElement, el: Element, anchorData?: AnchorData
     badge.style.left = `${rect.right - 26}px`;
     badge.style.top = `${rect.top - 32}px`;
   }
+  return false; // not collapsed
 }
 
 function createBadge(comment: Comment, index: number): HTMLElement {
@@ -273,9 +297,16 @@ export function refreshAllMarkers(comments: Comment[], resolvedEls: Map<string, 
       fadeBadgeIn(badge);
       return;
     }
-    positionMarker(badge, el, c.anchorData);
+    const collapsed = positionMarker(badge, el, c.anchorData);
     updateBadgeColor(badge, c.status);
-    fadeBadgeIn(badge); // always restore opacity — clears any lingering fade-out state
+    if (collapsed) {
+      // Element is hidden inside a collapsed section — show badge dimmed on ancestor
+      badge.style.transition = 'opacity 0.3s ease';
+      badge.style.opacity = '0.4';
+      badge.style.pointerEvents = 'auto';
+    } else {
+      fadeBadgeIn(badge);
+    }
   });
 }
 
