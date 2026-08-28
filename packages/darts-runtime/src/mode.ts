@@ -71,6 +71,10 @@ function createOverlay(): HTMLElement {
     cursor: _CURSOR,
   });
 
+  // Stop pointerdown from reaching React Aria's useInteractOutside (and similar
+  // dismiss handlers) which listen on document for pointerdown — not click.
+  el.addEventListener('pointerdown', (e: PointerEvent) => e.stopPropagation());
+
   el.addEventListener('click', (e: MouseEvent) => {
     if (!_armed) return;
     // Temporarily hide to find the real element underneath
