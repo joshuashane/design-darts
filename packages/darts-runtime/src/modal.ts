@@ -12,7 +12,7 @@ function ensurePopoverCSS(root: ShadowRoot): void {
   style.textContent = `
     .tack-popover {
       position: fixed;
-      z-index: 9800;
+      z-index: 2147483003;
       background: #1e1b3a;
       border: 1px solid rgba(160,130,255,0.3);
       border-radius: 12px;

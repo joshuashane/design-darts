@@ -32,7 +32,7 @@ const CSS = `
     border-radius: 999px;
     box-shadow: 0 8px 24px rgba(0,0,0,0.35);
     font-family: system-ui, -apple-system, sans-serif;
-    z-index: 9000;
+    z-index: 2147483000;
     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
   }
 
@@ -53,7 +53,7 @@ const CSS = `
     overflow: hidden;
     font-family: system-ui, -apple-system, sans-serif;
     color: #e0d7ff;
-    z-index: 9000;
+    z-index: 2147483000;
     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
   }
 
@@ -180,7 +180,7 @@ const CSS = `
     font-family: system-ui, -apple-system, sans-serif;
     writing-mode: vertical-rl;
     letter-spacing: 0.05em;
-    z-index: 9001;
+    z-index: 2147483001;
     gap: 0;
     user-select: none;
     /* Elastic snap-back on hover-release (base transition = out-transition) */
@@ -297,7 +297,7 @@ const CSS = `
     display: none;
     align-items: center;
     justify-content: center;
-    z-index: 9500;
+    z-index: 2147483002;
   }
   .modal-backdrop.show { display: flex; }
 
@@ -338,7 +338,7 @@ const CSS = `
   /* ── Comment read popover ── */
   #tack-comment-popover {
     position: fixed;
-    z-index: 9800;
+    z-index: 2147483003;
     width: 280px;
     background: #1e1b3a;
     border: 1px solid rgba(160,130,255,0.25);
