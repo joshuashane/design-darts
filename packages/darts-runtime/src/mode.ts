@@ -4,6 +4,7 @@ const _disarmCallbacks: Array<() => void> = [];
 const _clickCallbacks: Array<(el: Element, clientX: number, clientY: number) => void> = [];
 
 let _banner: HTMLElement | null = null;
+let _overlay: HTMLElement | null = null;
 
 // SVG crosshair reticle: dark outline for contrast on any background, brand purple on top
 const _CURSOR = (() => {
@@ -55,21 +56,40 @@ function createBanner(): HTMLElement {
   return el;
 }
 
-function onDocClick(evt: MouseEvent): void {
-  if (!_armed) return;
-  const target = evt.target as Element;
-  if (!target || !isAnnotatable(target)) return;
-  evt.preventDefault();
-  evt.stopPropagation();
-  _clickCallbacks.forEach(cb => cb(target, evt.clientX, evt.clientY));
+// Full-viewport transparent overlay that intercepts ALL pointer events so
+// nothing in the prototype (outside-click handlers, hover states, etc.) fires.
+// The cursor is set here so it never reverts to the prototype element's cursor.
+// We hit-test through the overlay by briefly hiding it and calling elementFromPoint.
+function createOverlay(): HTMLElement {
+  const el = document.createElement('div');
+  el.setAttribute('data-tack-ui', '');
+  Object.assign(el.style, {
+    position: 'fixed',
+    inset: '0',
+    // Below the Design Darts shadow host (2147483000) but above everything else
+    zIndex: '2147482999',
+    cursor: _CURSOR,
+  });
+
+  el.addEventListener('click', (e: MouseEvent) => {
+    if (!_armed) return;
+    // Temporarily hide to find the real element underneath
+    el.style.display = 'none';
+    const target = document.elementFromPoint(e.clientX, e.clientY) as Element | null;
+    el.style.display = '';
+    if (!target || !isAnnotatable(target)) return;
+    e.stopPropagation();
+    _clickCallbacks.forEach(cb => cb(target, e.clientX, e.clientY));
+  });
+
+  return el;
 }
 
 export function isAnnotatable(el: Element): boolean {
   if (el.closest('[data-tack-ignore]')) return false;
   if (el.closest('[data-tack-allow]')) return true;
   if (el.closest('.tack-shadow-host, [data-tack-ui]')) return false;
-  const blocked = el.closest('dialog, [popover], [role="dialog"], [role="menu"], [role="tooltip"], [aria-modal="true"]');
-  return !blocked;
+  return true;
 }
 
 export function isArmed(): boolean { return _armed; }
@@ -81,19 +101,19 @@ export function onElementClick(cb: (el: Element, clientX: number, clientY: numbe
 export function arm(): void {
   if (_armed) return;
   _armed = true;
-  document.body.style.cursor = _CURSOR;
+  _overlay = createOverlay();
+  document.body.appendChild(_overlay);
   _banner = createBanner();
   document.body.appendChild(_banner);
-  document.addEventListener('click', onDocClick, { capture: true });
   _armCallbacks.forEach(cb => cb());
 }
 
 export function disarm(): void {
   if (!_armed) return;
   _armed = false;
-  document.body.style.cursor = '';
+  if (_overlay?.parentNode) _overlay.parentNode.removeChild(_overlay);
+  _overlay = null;
   if (_banner?.parentNode) _banner.parentNode.removeChild(_banner);
   _banner = null;
-  document.removeEventListener('click', onDocClick, { capture: true });
   _disarmCallbacks.forEach(cb => cb());
 }
