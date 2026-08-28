@@ -469,6 +469,13 @@ export function initShadowHost(): void {
   host.style.zIndex = '2147483000';
   document.body.appendChild(host);
 
+  // Prevent pointer/mouse/click events originating inside the Design Darts UI
+  // from bubbling out to document-level handlers in the prototype (e.g. outside-
+  // click handlers that dismiss drawers, side sheets, and dialogs).
+  (['pointerdown', 'mousedown', 'click'] as const).forEach(type => {
+    host.addEventListener(type, (e: Event) => e.stopPropagation());
+  });
+
   _shadowRoot = host.attachShadow({ mode: 'closed' });
 
   const style = document.createElement('style');
